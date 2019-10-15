@@ -18,7 +18,7 @@ class AddCoreTables < ActiveRecord::Migration[6.0]
       t.timestamps
     end
 
-    create_table :language do |t|
+    create_table :languages do |t|
       t.string :name
       t.timestamps
     end
