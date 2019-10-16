@@ -5,3 +5,13 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+Language.destroy_all
+%w(English Dutch German French).each do |language|
+  Language.create(name: language)
+end
+
+Subject.destroy_all
+%w(English Mathematics Physics Chemistry Biology).each do |subject|
+  Subject.create(name: subject)
+end
