@@ -7,10 +7,11 @@ gem 'rails', '~> 6.0.0'
 gem 'pg'
 gem 'puma', '~> 3.11'
 gem 'jbuilder', '~> 2.5'
-gem 'devise'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'rack-cors'
+gem 'devise'
+gem 'devise_lastseenable'
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
