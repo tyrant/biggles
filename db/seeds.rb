@@ -1,17 +1,76 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+require 'csv'
 
-Language.destroy_all
+[
+  LanguageUser,
+  SubjectTutor,
+  TutorAvailability,
+  Availability,
+  Language,
+  Subject,
+  User,
+  Postcode,
+].each(&:destroy_all)
+
+# Create a bunch of Languages
 %w(English Dutch German French).each do |language|
-  Language.create(name: language)
+  l = Language.create name: language
+  ap "Created language with id=#{ l.id } name=#{ l.name }"
 end
 
-Subject.destroy_all
+# Create a bunch of Subjects
 %w(English Mathematics Physics Chemistry Biology).each do |subject|
-  Subject.create(name: subject)
+  s = Subject.create name: subject
+  ap "Created subject with id=#{ s.id } name=#{ s.name }"
+end
+
+# Create a bunch of Availabilities
+['Morning', 'Minus-infinity-o-clock', 'Too damn early', 'Too damn late', 'Teatime', 'Brunch', 'Morning tea', 'Nightcap', 'Midnight feast'].each do |name|
+  a = Availability.create name: name
+  ap "Created availability with id=#{ a.id } name=#{ a.name }"
+end
+
+# Create a shitload of Postcodes
+# What's :encoding? Behold: stackoverflow.com/questions/8380113
+codes = []
+CSV.read(Rails.root.join('db', 'nl_postal_codes.csv'), headers: true, encoding: 'iso-8859-1:utf-8').each do |row|
+  codes << { code: row[0], name: row[1], state: row[2], county: row[3], latitude: row[4], longitude: row[5] }
+end
+Postcode.create(codes)
+
+lowest_postcode_id = Postcode.select(:id).order('id asc').limit(1)[0].id
+
+# Create a bunch of Students
+2.upto(6) do |i|
+  s = Student.create(email: "#{i}@s.com", name: "s#{i}", password: '12345678', password_confirmation: '12345678', postcode: Postcode.find_by_id(lowest_postcode_id+i*100))
+  if s.valid?
+    ap "Created student with id=#{ s.id }"
+  else
+    ap s.errors.messages
+  end
+end
+
+# Create a bunch of Tutors
+2.upto(25) do |i|
+  t = Tutor.create(email: "#{i}@t.com", name: "t#{i}", password: '12345678', password_confirmation: '12345678', postcode: Postcode.find_by_id(lowest_postcode_id+i*100))
+  ap "Created tutor with id=#{ t.id }"
+end
+
+# Assign two random Languages to each User, of both types
+User.all.each do |user|
+  Language.limit(2).order("RANDOM()").each do |language|
+    LanguageUser.create language: language, user: user
+    ap "Created LanguageUser with language=#{ language.name }, user=#{ user.name }"
+  end
+end
+
+# Assign two random Subjects and Availabilities to each Tutor
+Tutor.all.each do |tutor|
+  Subject.limit(2).order("RANDOM()").each do |subject|
+    SubjectTutor.create subject: subject, tutor: tutor
+    ap "Created SubjectTutor with subject=#{ subject.name }, tutor=#{ tutor.name }"
+  end
+  Availability.limit(2).order("RANDOM()").each do |availability|
+    TutorAvailability.create tutor: tutor, availability: availability
+    ap "Created TutorAvailability with tutor=#{ tutor.name }, availability=#{ availability.name }"
+  end
 end

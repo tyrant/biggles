@@ -12,6 +12,10 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'rack-cors'
 gem 'devise'
 gem 'devise_lastseenable'
+gem 'awesome_print'
+gem 'geokit-rails'
+gem 'json-schema'
+gem 'faker'
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
@@ -28,6 +32,5 @@ end
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'faker'
   gem 'factory_bot_rails'
 end

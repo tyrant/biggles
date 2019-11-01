@@ -23,13 +23,13 @@ class AddCoreTables < ActiveRecord::Migration[6.0]
       t.timestamps
     end
 
-    create_table :subjects_tutors do |t|
+    create_table :subject_tutors do |t|
       t.references :subject
       t.references :tutor, foreign_key: { to_table: 'users' }
       t.timestamps
     end
 
-    create_table :students_subjects do |t|
+    create_table :student_subjects do |t|
       t.references :student, foreign_key: { to_table: 'users' }
       t.references :subject
       t.timestamps

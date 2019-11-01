@@ -5,4 +5,106 @@ class Tutor < User
   has_many :subject_tutors, inverse_of: :tutor
   has_many :subjects, through: :subject_tutors, inverse_of: :tutors
   has_many :reviews, inverse_of: :reviewee
+  has_many :tutor_availabilities, inverse_of: :tutor
+  has_many :availabilities, through: :tutor_availabilities, inverse_of: :tutors
+
+  # Search our beloved tutors.
+  # Availabilities: optional. Array of availability IDs. 
+  # Postcode: optional. If present, order the tutor results by geographical distance between
+  #   them and the postcode.
+  # distance: optional. If present, filter out all tutors with distance greater.
+  # Hourly rate: optional. Either low- or high-bounds. Filter out tutors outside them.
+  # Subjects. Optional. An array of IDs.
+  # Languages. Optional. An array of IDs.
+  # Page number: Optional. If absent, defaults to 0. Can be any positive integer.
+  # Page size: Optional. If absent, defaults to 20. Can be any positive integer.
+
+  scope :search, -> (params) {
+    params[:page_number] = 0 unless params.key? :page_number
+    params[:page_size] = 20 unless params.key? :page_size
+
+    # '.unscoped': its absence causes deprecation errors. See https://github.com/stefankroes/ancestry/pull/442
+    query = Tutor.unscoped.includes(:postcode, :subjects, :languages, :availabilities)
+    
+    if params.key? :availabilities
+      query = query.joins(:availabilities).where('availabilities.id IN (?)', params[:availabilities])
+    end
+
+    if params.key? :rate
+      query = query.where('users.hourly_rate > ?', params[:rate][:low]) if params[:rate].key? :low 
+      query = query.where('users.hourly_rate < ?', params[:rate][:high]) if params[:rate].key? :high
+    end
+
+    # If :postcode is present, order by distance from it, otherwise by updated_at.
+    if params.key? :postcode
+      if p = Postcode.find_by_code(params[:postcode])
+        if params.key? :distance
+          query = query.within(params[:distance], origin: [p.latitude, p.longitude])
+        end
+        query = query.joins(:postcode).by_distance(origin: [p.latitude, p.longitude])
+      end
+    end
+
+    if params.key? :subjects
+      query = query.joins(:subjects).where('subjects.id IN (?)', params[:subjects]) 
+    end
+
+    if params.key? :languages
+      query = query.joins(:languages).where('languages.id IN (?)', params[:languages])
+    end
+  
+    query.limit(params[:page_size])
+      .offset(params[:page_number] * params[:page_size])
+      .order('users.updated_at desc')
+  }
+
+  def as_json(params={})
+    {
+      id: id,
+      type: 'tutors',
+      attributes: {
+        name: name,
+        sex: sex,
+        age: age,
+        max_distance_available: max_distance_available,
+        hourly_rate: hourly_rate,
+        biography: biography,
+        created_at: created_at,
+        updated_at: updated_at,
+        last_seen: last_seen,
+      },
+      relationships: {
+        tutor_availabilities: {
+          data: tutor_availabilities.map do |tutor_availability|
+              {
+                type: 'tutor_availabilities',
+                id: tutor_availability.id,
+              } 
+            end
+        },
+        subject_tutors: {
+          data: subject_tutors.map do |subject_tutor|
+              {
+                type: 'subject_tutors',
+                id: subject_tutor.id,
+              }
+            end
+        },
+        language_users: {
+          data: language_users.map do |language_user|
+              {
+                type: 'language_users',
+                id: language_user.id,
+              }
+            end
+        },
+        postcode: { 
+          data: {
+            type: 'postcodes',
+            id: postcode.id 
+          }
+        }
+      }
+    }
+  end
 end

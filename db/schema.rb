@@ -10,16 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_16_013433) do
+ActiveRecord::Schema.define(version: 2019_11_01_052734) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "language_user", force: :cascade do |t|
+  create_table "availabilities", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "language_users", force: :cascade do |t|
     t.bigint "language_id"
     t.bigint "user_id"
-    t.index ["language_id"], name: "index_language_user_on_language_id"
-    t.index ["user_id"], name: "index_language_user_on_user_id"
+    t.index ["language_id"], name: "index_language_users_on_language_id"
+    t.index ["user_id"], name: "index_language_users_on_user_id"
   end
 
   create_table "languages", force: :cascade do |t|
@@ -37,6 +43,15 @@ ActiveRecord::Schema.define(version: 2019_10_16_013433) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["messagee_id"], name: "index_messages_on_messagee_id"
     t.index ["messager_id"], name: "index_messages_on_messager_id"
+  end
+
+  create_table "postcodes", force: :cascade do |t|
+    t.string "code"
+    t.string "name"
+    t.string "state"
+    t.string "county"
+    t.float "latitude"
+    t.float "longitude"
   end
 
   create_table "reviews", force: :cascade do |t|
@@ -59,13 +74,22 @@ ActiveRecord::Schema.define(version: 2019_10_16_013433) do
     t.index ["saver_id"], name: "index_saved_profiles_on_saver_id"
   end
 
-  create_table "students_subjects", force: :cascade do |t|
+  create_table "student_subjects", force: :cascade do |t|
     t.bigint "student_id"
     t.bigint "subject_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["student_id"], name: "index_students_subjects_on_student_id"
-    t.index ["subject_id"], name: "index_students_subjects_on_subject_id"
+    t.index ["student_id"], name: "index_student_subjects_on_student_id"
+    t.index ["subject_id"], name: "index_student_subjects_on_subject_id"
+  end
+
+  create_table "subject_tutors", force: :cascade do |t|
+    t.bigint "subject_id"
+    t.bigint "tutor_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["subject_id"], name: "index_subject_tutors_on_subject_id"
+    t.index ["tutor_id"], name: "index_subject_tutors_on_tutor_id"
   end
 
   create_table "subjects", force: :cascade do |t|
@@ -74,23 +98,21 @@ ActiveRecord::Schema.define(version: 2019_10_16_013433) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "subjects_tutors", force: :cascade do |t|
-    t.bigint "subject_id"
+  create_table "tutor_availabilities", force: :cascade do |t|
     t.bigint "tutor_id"
+    t.bigint "availability_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["subject_id"], name: "index_subjects_tutors_on_subject_id"
-    t.index ["tutor_id"], name: "index_subjects_tutors_on_tutor_id"
+    t.index ["availability_id"], name: "index_tutor_availabilities_on_availability_id"
+    t.index ["tutor_id"], name: "index_tutor_availabilities_on_tutor_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "sex"
     t.integer "age"
-    t.string "postcode"
     t.integer "max_distance_available"
-    t.integer "hourly_rate"
-    t.string "availability"
+    t.decimal "hourly_rate"
     t.text "biography"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -101,6 +123,7 @@ ActiveRecord::Schema.define(version: 2019_10_16_013433) do
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
     t.datetime "last_seen"
+    t.integer "postcode_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -111,6 +134,7 @@ ActiveRecord::Schema.define(version: 2019_10_16_013433) do
   add_foreign_key "reviews", "users", column: "reviewer_id"
   add_foreign_key "saved_profiles", "users", column: "savee_id"
   add_foreign_key "saved_profiles", "users", column: "saver_id"
-  add_foreign_key "students_subjects", "users", column: "student_id"
-  add_foreign_key "subjects_tutors", "users", column: "tutor_id"
+  add_foreign_key "student_subjects", "users", column: "student_id"
+  add_foreign_key "subject_tutors", "users", column: "tutor_id"
+  add_foreign_key "users", "postcodes"
 end

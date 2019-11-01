@@ -1,4 +1,5 @@
 require_relative 'boot'
+require './app/middleware/catch_json_parse_errors'
 
 require "rails"
 # Pick the frameworks you want:
@@ -31,5 +32,8 @@ module Biggles
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # https://stackoverflow.com/questions/40268101/how-to-rescue-actiondispatchparamsparserparseerror-and-return-custom-api-err
+    config.middleware.use CatchJsonParseErrors
   end
 end
