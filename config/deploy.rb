@@ -2,7 +2,7 @@
 lock "~> 3.11.2"
 
 set :application, "biggles"
-set :repo_url, "git@github.com/tyrant/biggles.git"
+set :repo_url, "git@github.com:tyrant/biggles.git"
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
