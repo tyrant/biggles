@@ -138,43 +138,43 @@ describe Tutor do
       let!(:t90) { create :tutor, postcode: p90, updated_at: Time.now - 7.days }
       let!(:t91) { create :tutor, postcode: p91, updated_at: Time.now - 8.days }
 
-      context "Supplying the postcode-code for p31" do
+      context "Supplying the postcode for p31" do
  
         context "Supplying a distance" do
 
           context "Distance=10km" do
             it "returns only the tutor on the supplied postcode, ordered by distance, then updated_at" do
-              q = Tutor.search({ postcode: p31.code, distance: 10 })
-              expect(q).to eq [t31]
+              query = Tutor.search({ postcode: p31.code, distance: 10 })
+              expect(query).to eq [t31]
             end
           end
 
           context "Distance=120km" do
             it "returns the same tutor and its nearest neighbour, ordered by distance, then updated_at" do
-              q = Tutor.search({ postcode: p31.code, distance: 120 })
-              expect(q).to eq [t31, t30]
+              query = Tutor.search({ postcode: p31.code, distance: 120 })
+              expect(query).to eq [t31, t30]
             end
           end
 
           context "Distance=360km" do 
             it "returns the same tutor and its five nearest neighbours, ordered by distance, then updated_at" do
-              q = Tutor.search({ postcode: p31.code, distance: 360 })
-              expect(q).to eq [t31, t30, t01, t61, t60, t00]
+              query = Tutor.search({ postcode: p31.code, distance: 360 })
+              expect(query).to eq [t31, t30, t01, t61, t60, t00]
             end
           end
 
           context "Distance=1000km" do 
             it "returns the same tutor and its seven nearest neighbours, ordered by distance, then updated_at" do
-              q = Tutor.search({ postcode: p31.code, distance: 1000 })
-              expect(q).to eq [t31, t30, t01, t61, t60, t00, t91, t90]
+              query = Tutor.search({ postcode: p31.code, distance: 1000 })
+              expect(query).to eq [t31, t30, t01, t61, t60, t00, t91, t90]
             end
           end
         end
 
         context "Not supplying a distance" do
           it "returns the same tutor and its seven nearest neighbours, ordered by distance, then updated_at" do
-            q = Tutor.search({ postcode: p31.code })
-            expect(q).to eq [t31, t30, t01, t61, t60, t00, t91, t90]
+            query = Tutor.search({ postcode: p31.code })
+            expect(query).to eq [t31, t30, t01, t61, t60, t00, t91, t90]
           end
         end
       end
@@ -290,6 +290,58 @@ describe Tutor do
           expect(Tutor.search({ languages: [l1.id, l2.id, l3.id, l4.id] })).to eq [t1, t2, t3, t4]
         end
       end
+    end
+
+
+    describe "Searching various page sizes" do
+
+      before {
+        create_list :tutor, 22
+      }
+
+      context "page_size totally absent" do
+        it { expect(Tutor.search({}).length).to eq 20 }
+      end
+
+      context "page_size=5" do
+        it { expect(Tutor.search({ page_size: 5 }).length).to eq 5 }
+      end
+
+      context "page_size=10" do
+        it { expect(Tutor.search({ page_size: 10 }).length).to eq 10 }
+      end
+
+      context "page_size=15" do
+        it { expect(Tutor.search({ page_size: 15 }).length).to eq 15 }
+      end
+
+      context "page_size=25" do
+        it { expect(Tutor.search({ page_size: 25 }).length).to eq 22 }
+      end
+    end
+
+    describe "Searching various page numbers" do
+
+      let!(:t1) { create :tutor, updated_at: Time.now - 1.day }
+      let!(:t2) { create :tutor, updated_at: Time.now - 2.days }
+      let!(:t3) { create :tutor, updated_at: Time.now - 3.days }
+      let!(:t4) { create :tutor, updated_at: Time.now - 4.days }
+      let!(:t5) { create :tutor, updated_at: Time.now - 5.days }
+      let!(:t6) { create :tutor, updated_at: Time.now - 6.days }
+      let!(:t7) { create :tutor, updated_at: Time.now - 7.days }
+      let!(:t8) { create :tutor, updated_at: Time.now - 8.days }
+      let!(:t9) { create :tutor, updated_at: Time.now - 9.days }
+      let!(:t10) { create :tutor, updated_at: Time.now - 10.days }
+      let!(:t11) { create :tutor, updated_at: Time.now - 11.days }
+
+      it { expect(Tutor.search({ page_size: 2 })).to eq [t1, t2] }
+      it { expect(Tutor.search({ page_size: 2, page_number: 0 })).to eq [t1, t2] }
+      it { expect(Tutor.search({ page_size: 2, page_number: 1 })).to eq [t3, t4] }
+      it { expect(Tutor.search({ page_size: 2, page_number: 2 })).to eq [t5, t6] }
+      it { expect(Tutor.search({ page_size: 2, page_number: 3 })).to eq [t7, t8] }
+      it { expect(Tutor.search({ page_size: 2, page_number: 4 })).to eq [t9, t10] }
+      it { expect(Tutor.search({ page_size: 2, page_number: 5 })).to eq [t11] }
+      it { expect(Tutor.search({ page_size: 2, page_number: 6 })).to eq [] }
     end
 
   end
