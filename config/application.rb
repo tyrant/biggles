@@ -35,5 +35,12 @@ module Biggles
 
     # https://stackoverflow.com/questions/40268101/how-to-rescue-actiondispatchparamsparserparseerror-and-return-custom-api-err
     config.middleware.use CatchJsonParseErrors
+
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'
+        resource '*', headers: :any, methods: [:get, :post, :options]
+      end
+    end
   end
 end
