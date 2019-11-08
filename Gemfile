@@ -12,6 +12,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'rack-cors'
 gem 'devise'
 gem 'devise_lastseenable'
+gem 'devise-jwt'
 gem 'awesome_print'
 gem 'geokit-rails'
 gem 'json-schema'
