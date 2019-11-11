@@ -1,17 +1,55 @@
 require 'rails_helper'
+require 'devise/jwt/test_helpers'
 
 describe "Tutor routes" do
 
   describe "#search" do
 
-    before {
-      post "/tutors/search", params: json, headers: { 'Content-Type': "application/json" }
+    let(:user) { create :user }
+    let(:jwt_headers) {
+      json_headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+      Devise::JWT::TestHelpers.auth_headers(json_headers, user)  
+    }
+    let(:blacklist) { false }
+
+    # All kinds of goodies going on here. Here's the doc for revoke_jwt:
+    # https://github.com/waiting-for-dev/devise-jwt/blob/master/lib/devise/jwt/revocation_strategies/blacklist.rb
+    let(:blacklist_strategy) { 
+      jwt_token = jwt_headers['Authorization'].split(' ').last
+      token_payload = jwt_token.split('.')[1]
+      base64_decoded = Base64.decode64 token_payload
+      json_parsed = JSON.parse(base64_decoded)
+
+      JWTBlacklist.revoke_jwt json_parsed, user
     }
 
+    before {
+      blacklist_strategy if blacklist
+      post "/tutors/search", params: json, headers: jwt_headers
+    }
+    
+    subject { response }
+
+    context "No user" do
+      let(:jwt_headers) { {} }
+      let(:json) { {} }
+
+      it { is_expected.to have_http_status(401) }
+      it { expect(response.body).to eq "You need to sign in or sign up before continuing." }
+    end
+
+    context "User with blacklisted jwt" do
+      let(:blacklist) { true }
+      let(:json) { {} }
+
+      it { is_expected.to have_http_status(401) }
+      it { expect(response_json['error']).to eq 'revoked token' }
+    end
+    
     context "JSON is a bit malformed" do
       let(:json) { '{"foo":"bar}' }
 
-      it { expect(response).to have_http_status(418) }
+      it { is_expected.to have_http_status(418) }
       it "squirts back an oh-so-hilarious taunt" do 
         expect(response_json['status']).to eq "I'm not a teapot you're a teapot" 
       end
@@ -41,7 +79,7 @@ describe "Tutor routes" do
     context "availabilities is an object" do
       let(:json) { '{"availabilities":{"foo":"bar"}}' }
 
-      it { expect(response).to have_http_status(402) }
+      it { is_expected.to have_http_status(402) }
       it { expect(response_json['status']).to include 'invalid' }
       it { expect(response_json['error'][0]).to include "The property '#/availabilities' of type object did not match the following type: array" }
     end

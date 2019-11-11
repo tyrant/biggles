@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::API
+  
+  respond_to :json
 
   def render_resource(resource)
 

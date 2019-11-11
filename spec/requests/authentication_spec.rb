@@ -19,7 +19,7 @@ describe 'POST /login', type: :request do
 
     it { expect(response).to have_http_status(200) }
 
-    it 'returns JTW token in authorization header' do
+    it 'returns JWT token in authorization header' do
       expect(response.headers['Authorization']).to be_present
     end
 

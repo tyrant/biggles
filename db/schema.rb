@@ -21,9 +21,10 @@ ActiveRecord::Schema.define(version: 2019_11_07_063054) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "jwt_blacklist", force: :cascade do |t|
+  create_table "jwt_blacklists", force: :cascade do |t|
     t.string "jti", null: false
-    t.index ["jti"], name: "index_jwt_blacklist_on_jti"
+    t.datetime "exp", null: false
+    t.index ["jti"], name: "index_jwt_blacklists_on_jti"
   end
 
   create_table "language_users", force: :cascade do |t|

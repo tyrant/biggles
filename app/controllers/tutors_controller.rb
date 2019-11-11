@@ -2,6 +2,7 @@ require "json-schema"
 
 class TutorsController < ApplicationController
 
+  before_action :authenticate_user!
   before_action :validate_params!
 
   def search
