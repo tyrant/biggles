@@ -3,36 +3,28 @@ require 'devise/jwt/test_helpers'
 
 describe "Tutor routes" do
 
-  describe "#search" do
+  let(:tutor) { create :tutor }
+  let(:json) { {} }
+  let(:jwt_headers) {
+    json_headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+    Devise::JWT::TestHelpers.auth_headers(json_headers, tutor)  
+  }
+  let(:blacklist) { false }
 
-    let(:user) { create :user }
-    let(:jwt_headers) {
-      json_headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' }
-      Devise::JWT::TestHelpers.auth_headers(json_headers, user)  
-    }
-    let(:blacklist) { false }
+  before { 
+    blacklist_user(tutor) if blacklist
+  }
 
-    # All kinds of goodies going on here. Here's the doc for revoke_jwt:
-    # https://github.com/waiting-for-dev/devise-jwt/blob/master/lib/devise/jwt/revocation_strategies/blacklist.rb
-    let(:blacklist_strategy) { 
-      jwt_token = jwt_headers['Authorization'].split(' ').last
-      token_payload = jwt_token.split('.')[1]
-      base64_decoded = Base64.decode64 token_payload
-      json_parsed = JSON.parse(base64_decoded)
-
-      JWTBlacklist.revoke_jwt json_parsed, user
-    }
+  describe "POST #search" do
 
     before {
-      blacklist_strategy if blacklist
       post "/tutors/search", params: json, headers: jwt_headers
     }
     
     subject { response }
 
-    context "No user" do
+    context "No tutor" do
       let(:jwt_headers) { {} }
-      let(:json) { {} }
 
       it { is_expected.to have_http_status(401) }
       it { expect(response.body).to eq "You need to sign in or sign up before continuing." }
@@ -40,7 +32,6 @@ describe "Tutor routes" do
 
     context "User with blacklisted jwt" do
       let(:blacklist) { true }
-      let(:json) { {} }
 
       it { is_expected.to have_http_status(401) }
       it { expect(response_json['error']).to eq 'revoked token' }
@@ -429,6 +420,29 @@ describe "Tutor routes" do
       let(:json) { '{"page_size":918}' }
 
       it { expect(response).to have_http_status(200) }
+    end
+  end
+
+  describe 'PUT #update' do
+
+    #let(:jwt)
+
+    before {
+      put "/tutors/#{tutor.id}", headers: jwt_headers, params: json
+    }
+
+    context 'No user details at all, unauthenticated' do
+
+      it { expect(response.code).to eq 401 }
+    end
+
+    context 'Another user, not authorized' do 
+    end
+
+    describe 'Managing languages' do
+    end
+
+    describe 'Managing availabilities' do
     end
   end
 end

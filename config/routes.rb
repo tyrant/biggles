@@ -14,8 +14,12 @@ Rails.application.routes.draw do
              defaults: {
                format: :json
              }
+  devise_scope :user do
+    get 'users/current', to: 'sessions#show'
+  end
 
-  resources :tutors, only: [] do 
+
+  resources :tutors, only: [:update] do 
     post 'search', on: :collection
   end
   

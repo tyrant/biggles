@@ -9,6 +9,10 @@ class TutorsController < ApplicationController
     render json: Tutor.search(tutor_params)
   end
 
+  def update
+
+  end
+
   # rescue_from Exception do |e|
   #   render json: {
   #     status: "Oh no!",
