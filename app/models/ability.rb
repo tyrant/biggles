@@ -30,8 +30,19 @@ class Ability
     #
     # See the wiki for details:
     # https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
+    
+    if user.has_role? :admin
+      can :manage, :all
+      return
+    end
 
-    can :manage, TutorAvailability, tutor_id: user.id
+    can :manage, LanguageUser, user_id: user.id
+    can :manage, Message, messager_id: user.id
+    can :manage, Review, reviewer_id: user.id
+    can :manage, SavedProfile, saver_id: user.id
+    can :manage, StudentSubject, student_id: user.id
     can :manage, SubjectTutor, tutor_id: user.id
+    can :manage, User, id: user.id
+    can :manage, TutorAvailability, tutor_id: user.id
   end
 end

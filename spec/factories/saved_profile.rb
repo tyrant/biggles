@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :saved_profile do
-    saver
-    savee
+    association :saver, factory: :student
+    association :savee, factory: :tutor
   end
 end

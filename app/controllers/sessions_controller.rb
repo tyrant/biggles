@@ -5,7 +5,6 @@ class SessionsController < Devise::SessionsController
   end
 
   def show
-    puts 'blargh'
   end
 
   private

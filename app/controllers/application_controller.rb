@@ -16,7 +16,9 @@ class ApplicationController < ActionController::API
         }],
       }, status: :bad_request
     end
-
   end
 
+  rescue_from CanCan::AccessDenied do |e|
+    render json: e.message, status: 403
+  end
 end

@@ -1,30 +1,24 @@
 require 'rails_helper'
-require 'devise/jwt/test_helpers'
 
 describe "Tutor routes" do
 
   let(:tutor) { create :tutor }
-  let(:json) { {} }
-  let(:jwt_headers) {
-    json_headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' }
-    Devise::JWT::TestHelpers.auth_headers(json_headers, tutor)  
-  }
+  let(:json) { {}.to_json }
+  let(:headers) { jwt_headers_for tutor }
   let(:blacklist) { false }
 
-  before { 
-    blacklist_user(tutor) if blacklist
-  }
+  before { blacklist_user(tutor, headers) if blacklist }
 
   describe "POST #search" do
 
     before {
-      post "/tutors/search", params: json, headers: jwt_headers
+      post search_tutors_path, params: json, headers: headers
     }
     
     subject { response }
 
     context "No tutor" do
-      let(:jwt_headers) { {} }
+      let(:headers) { {} }
 
       it { is_expected.to have_http_status(401) }
       it { expect(response.body).to eq "You need to sign in or sign up before continuing." }
@@ -425,24 +419,6 @@ describe "Tutor routes" do
 
   describe 'PUT #update' do
 
-    #let(:jwt)
 
-    before {
-      put "/tutors/#{tutor.id}", headers: jwt_headers, params: json
-    }
-
-    context 'No user details at all, unauthenticated' do
-
-      it { expect(response.code).to eq 401 }
-    end
-
-    context 'Another user, not authorized' do 
-    end
-
-    describe 'Managing languages' do
-    end
-
-    describe 'Managing availabilities' do
-    end
   end
 end
