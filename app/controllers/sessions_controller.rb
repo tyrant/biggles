@@ -1,7 +1,9 @@
 class SessionsController < Devise::SessionsController
 
   def create
-    super { @token = current_token }
+    super do
+      @token = current_token
+    end
   end
 
   def show
