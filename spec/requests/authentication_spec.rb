@@ -4,7 +4,7 @@ describe 'POST /login', type: :request do
 
   let(:user) { create :user }
 
-  before { post '/login', params: params }
+  before { post user_session_path, params: params }
 
   context 'when params are correct' do
 
@@ -24,7 +24,7 @@ describe 'POST /login', type: :request do
     end
 
     it 'has "Authorization"="Bearer xxxxx"' do
-      expect(response.headers['Authorization'][0..6]).to eq "Bearer "
+      expect(response.headers['Authorization'].split(' ').first).to eq "Bearer"
     end
 
     it 'returns valid JWT token' do
