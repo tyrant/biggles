@@ -19,6 +19,7 @@ gem 'awesome_print'
 gem 'geokit-rails'
 gem 'json-schema'
 gem 'faker'
+gem 'active_storage_base64'
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'

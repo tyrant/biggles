@@ -9,6 +9,11 @@ FactoryBot.define do
     age { Faker::Number.between(from: 1, to: 107) }
 
     postcode 
+
+    after :build do |user|
+      image = File.open(Rails.root.join('spec', 'support', 'assets', 'austin-powers-headshot.jpeg'), 'rb').read
+      user.profile_image.attach(data: "data:image/jpeg;base64,#{ Base64.encode64(image) }")
+    end
   end
 
   factory :student, parent: :user, class: 'Student' do

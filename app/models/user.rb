@@ -1,5 +1,6 @@
 class User < ApplicationRecord
-  
+  include Rails.application.routes.url_helpers
+
   rolify
 
   # Include default devise modules. Others available are:
@@ -12,6 +13,8 @@ class User < ApplicationRecord
   has_many :sent_messages, class_name: 'Message', inverse_of: :messager
   belongs_to :postcode, inverse_of: :users, optional: true
 
+  has_one_base64_attached :profile_image
+
   accepts_nested_attributes_for :language_users
 
   acts_as_mappable through: :postcode
@@ -21,13 +24,18 @@ class User < ApplicationRecord
       id: id,
       type: 'users',
       attributes: {
+        created_at: created_at,
+        updated_at: updated_at,
         email: email,
         name: name,
         sex: sex,
         age: age,
         last_seen: last_seen,
-        created_at: created_at,
-        updated_at: updated_at,
+        profile_image_path: if profile_image.blank?
+            nil
+          else
+            rails_blob_path(profile_image, only_path: true)
+          end
       },
       relationships: {
         language_users: {
