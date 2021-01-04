@@ -6,19 +6,23 @@ describe Tutor do
 
     describe "Searching various availabilities" do
 
-      let!(:t1) { create :tutor, updated_at: Time.current - 1.day }
-      let!(:t2) { create :tutor, updated_at: Time.current - 2.days }
-      let!(:t3) { create :tutor, updated_at: Time.current - 3.days }
+      let!(:ts) { create_list :tutor, 3 }
       let!(:a1) { create :availability, name: 'morning' }
       let!(:a2) { create :availability, name: 'evening' }
-      let!(:t1a1) { create :tutor_availability, tutor: t1, availability: a1 }
-      let!(:t2a2) { create :tutor_availability, tutor: t2, availability: a2 }
-      let!(:t3a1) { create :tutor_availability, tutor: t3, availability: a1 }
-      let!(:t3a2) { create :tutor_availability, tutor: t3, availability: a2 }
+      let!(:t1a1) { create :tutor_availability, tutor: ts[0], availability: a1 }
+      let!(:t2a2) { create :tutor_availability, tutor: ts[1], availability: a2 }
+      let!(:t3a1) { create :tutor_availability, tutor: ts[2], availability: a1 }
+      let!(:t3a2) { create :tutor_availability, tutor: ts[2], availability: a2 }
+
+      before do
+        ts.each_with_index do |tutor, i|
+          tutor.update updated_at: i.days.ago
+        end
+      end
 
       context "availabilities key totally absent" do
         it "returns all three tutors" do
-          expect(Tutor.search({})).to eq [t1, t2, t3]
+          expect(Tutor.search({})).to eq [ts[0], ts[1], ts[2]]
         end
       end
 
@@ -30,30 +34,36 @@ describe Tutor do
 
       context "availabilities=[morning]" do
         it "returns tutors 1 and 3" do
-          expect(Tutor.search({ availabilities: [a1.id] })).to eq [t1, t3]
+          expect(Tutor.search({ availabilities: [a1.id] })).to eq [ts[0], ts[2]]
         end
       end
 
       context "availabilities=[evening]" do
         it "returns tutors 2 and 3" do
-          expect(Tutor.search({ availabilities: [a2.id] })).to eq [t2, t3]
+          expect(Tutor.search({ availabilities: [a2.id] })).to eq [ts[1], ts[2]]
         end
       end
 
       context "availabilities=[morning, evening]" do
         it "returns all three tutors" do
-          expect(Tutor.search({ availabilities: [a1.id, a2.id] })).to eq [t1, t2, t3]
+          expect(Tutor.search({ availabilities: [a1.id, a2.id] })).to eq [ts[0], ts[1], ts[2]]
         end
       end
     end
 
     describe "Searching various hourly rates, tutors have rate 10, 15, 20, 25, 30" do
 
-      let!(:t10) { create :tutor, hourly_rate: 10.00, updated_at: Time.current - 1.day }
-      let!(:t15) { create :tutor, hourly_rate: 15.00, updated_at: Time.current - 2.days }
-      let!(:t20) { create :tutor, hourly_rate: 20.00, updated_at: Time.current - 3.days }
-      let!(:t25) { create :tutor, hourly_rate: 25.00, updated_at: Time.current - 4.days }
-      let!(:t30) { create :tutor, hourly_rate: 30.00, updated_at: Time.current - 5.days }
+      let!(:t10) { create :tutor, hourly_rate: 10.00 }
+      let!(:t15) { create :tutor, hourly_rate: 15.00 }
+      let!(:t20) { create :tutor, hourly_rate: 20.00 }
+      let!(:t25) { create :tutor, hourly_rate: 25.00 }
+      let!(:t30) { create :tutor, hourly_rate: 30.00 }
+
+      before do
+        [t10, t15, t20, t25, t30].each_with_index do |tutor, i|
+          tutor.update updated_at: Time.current - (i+1).day
+        end
+      end
 
       context "rates key is absent" do
         it "returns all five tutors" do
@@ -129,14 +139,20 @@ describe Tutor do
       let!(:p61) { create :postcode, code: '6161', latitude: 6, longitude: 1 }
       let!(:p90) { create :postcode, code: '9090', latitude: 9, longitude: 0 } 
       let!(:p91) { create :postcode, code: '9191', latitude: 9, longitude: 1 }
-      let!(:t00) { create :tutor, postcode: p00, updated_at: Time.now - 1.day }
-      let!(:t01) { create :tutor, postcode: p01, updated_at: Time.now - 2.days }
-      let!(:t30) { create :tutor, postcode: p30, updated_at: Time.now - 3.days }
-      let!(:t31) { create :tutor, postcode: p31, updated_at: Time.now - 4.days }
-      let!(:t60) { create :tutor, postcode: p60, updated_at: Time.now - 5.days }
-      let!(:t61) { create :tutor, postcode: p61, updated_at: Time.now - 6.days }
-      let!(:t90) { create :tutor, postcode: p90, updated_at: Time.now - 7.days }
-      let!(:t91) { create :tutor, postcode: p91, updated_at: Time.now - 8.days }
+      let!(:t00) { create :tutor, postcode: p00 }
+      let!(:t01) { create :tutor, postcode: p01 }
+      let!(:t30) { create :tutor, postcode: p30 }
+      let!(:t31) { create :tutor, postcode: p31 }
+      let!(:t60) { create :tutor, postcode: p60 }
+      let!(:t61) { create :tutor, postcode: p61 }
+      let!(:t90) { create :tutor, postcode: p90 }
+      let!(:t91) { create :tutor, postcode: p91 }
+
+      before do
+        [t00, t01, t30, t31, t60, t61, t90, t91].each_with_index do |tutor, i|
+          tutor.update updated_at: Time.now - (i+2).day
+        end
+      end
 
       context "Supplying the postcode for p31" do
  
@@ -186,10 +202,10 @@ describe Tutor do
       let!(:s2) { create :subject }
       let!(:s3) { create :subject }
       let!(:s4) { create :subject }
-      let!(:t1) { create :tutor, updated_at: Time.now - 2.days }
-      let!(:t2) { create :tutor, updated_at: Time.now - 3.days }
-      let!(:t3) { create :tutor, updated_at: Time.now - 4.days }
-      let!(:t4) { create :tutor, updated_at: Time.now - 5.days }
+      let!(:t1) { create :tutor }
+      let!(:t2) { create :tutor }
+      let!(:t3) { create :tutor }
+      let!(:t4) { create :tutor }
       let!(:s1t1) { create :subject_tutor, subject: s1, tutor: t1 }
       let!(:s1t3) { create :subject_tutor, subject: s1, tutor: t3 }
       let!(:s1t4) { create :subject_tutor, subject: s1, tutor: t4 }
@@ -198,6 +214,12 @@ describe Tutor do
       let!(:s3t1) { create :subject_tutor, subject: s3, tutor: t1 }
       let!(:s3t2) { create :subject_tutor, subject: s3, tutor: t2 }
       let!(:s4t4) { create :subject_tutor, subject: s4, tutor: t4 }
+
+      before do
+        [t1, t2, t3, t4].each_with_index do |tutor, i|
+          tutor.update updated_at: Time.now - (i+2).days
+        end
+      end
 
       context "Not supplying any subject key" do
         it "returns all four tutors" do
@@ -242,10 +264,10 @@ describe Tutor do
       let!(:l2) { create :language }
       let!(:l3) { create :language }
       let!(:l4) { create :language }
-      let!(:t1) { create :tutor, updated_at: Time.now - 2.days }
-      let!(:t2) { create :tutor, updated_at: Time.now - 3.days }
-      let!(:t3) { create :tutor, updated_at: Time.now - 4.days }
-      let!(:t4) { create :tutor, updated_at: Time.now - 5.days }
+      let!(:t1) { create :tutor }
+      let!(:t2) { create :tutor }
+      let!(:t3) { create :tutor }
+      let!(:t4) { create :tutor }
       let!(:l1u1) { create :language_user, language: l1, user: t1 }
       let!(:l1u3) { create :language_user, language: l1, user: t3 }
       let!(:l1u4) { create :language_user, language: l1, user: t4 }
@@ -254,6 +276,12 @@ describe Tutor do
       let!(:l3u1) { create :language_user, language: l3, user: t1 }
       let!(:l3u2) { create :language_user, language: l3, user: t2 }
       let!(:l4u4) { create :language_user, language: l4, user: t4 }
+
+      before do
+        [t1, t2, t3, t4].each_with_index do |tutor, i|
+          tutor.update updated_at: Time.now - (i+2).days
+        end
+      end
 
       context "Not supplying any language key" do
         it "returns all four tutors" do
@@ -322,17 +350,23 @@ describe Tutor do
 
     describe "Searching various page numbers" do
 
-      let!(:t1) { create :tutor, updated_at: Time.now - 1.day }
-      let!(:t2) { create :tutor, updated_at: Time.now - 2.days }
-      let!(:t3) { create :tutor, updated_at: Time.now - 3.days }
-      let!(:t4) { create :tutor, updated_at: Time.now - 4.days }
-      let!(:t5) { create :tutor, updated_at: Time.now - 5.days }
-      let!(:t6) { create :tutor, updated_at: Time.now - 6.days }
-      let!(:t7) { create :tutor, updated_at: Time.now - 7.days }
-      let!(:t8) { create :tutor, updated_at: Time.now - 8.days }
-      let!(:t9) { create :tutor, updated_at: Time.now - 9.days }
-      let!(:t10) { create :tutor, updated_at: Time.now - 10.days }
-      let!(:t11) { create :tutor, updated_at: Time.now - 11.days }
+      let!(:t1) { create :tutor }
+      let!(:t2) { create :tutor }
+      let!(:t3) { create :tutor }
+      let!(:t4) { create :tutor }
+      let!(:t5) { create :tutor }
+      let!(:t6) { create :tutor }
+      let!(:t7) { create :tutor }
+      let!(:t8) { create :tutor }
+      let!(:t9) { create :tutor }
+      let!(:t10) { create :tutor }
+      let!(:t11) { create :tutor }
+
+      before do
+        [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11].each_with_index do |tutor, i|
+          tutor.update updated_at: Time.now - (i+1).day
+        end
+      end
 
       it { expect(Tutor.search({ page_size: 2 })).to eq [t1, t2] }
       it { expect(Tutor.search({ page_size: 2, page_number: 0 })).to eq [t1, t2] }
