@@ -13,6 +13,7 @@ describe 'POST /signup', type: :request do
   let(:params) { 
     { 
       user: {
+        # User attrs
         email: tutor_attrs[:email],
         password: tutor_attrs[:password],
         password_confirmation: tutor_attrs[:password],
@@ -20,61 +21,104 @@ describe 'POST /signup', type: :request do
         last_seen: tutor_attrs[:last_seen],
         sex: tutor_attrs[:sex],
         age: tutor_attrs[:age],
+        profile_image: profile_image_datastring,
+
+        # Tutor attrs
+        biography: tutor_attrs[:biography],
+        hourly_rate: tutor_attrs[:hourly_rate],
+        max_distance_available: tutor_attrs[:max_distance_available],
 
         city: tutor_attrs[:city],
 
         postcode: { id: postcode.id },
 
-        subject: tutor_attrs[:subject],
-        biography: tutor_attrs[:biography],
-        hourly_rate: tutor_attrs[:hourly_rate],
-        max_distance_available: tutor_attrs[:max_distance_available],
-        profile_image: profile_image_datastring
+        subject: tutor_attrs[:subject]
       }
     }
   }
 
   context "correct params" do
 
-    before { post '/signup', params: params }
+    describe "just regular user attributes" do
 
-    it "returns 200 OK" do
-      expect(response).to have_http_status(200)
+      before { post '/signup', params: params }
+
+      it { expect(response).to have_http_status(200) }
+
+      it "saves and returns the email" do
+        expect(response_json['attributes']['email']).to eq tutor_attrs[:email]
+      end
+
+      it "saves and returns the name" do
+        expect(response_json['attributes']['name']).to eq tutor_attrs[:name]
+      end
+
+      it "saves and returns last_seen (sidestep format issues by comparing both timestamps)" do
+        expect(Time.parse(response_json['attributes']['last_seen']).to_i).to eq tutor_attrs[:last_seen].to_i
+      end
+
+      it "saves and returns the sex" do
+        expect(response_json['attributes']['sex']).to eq tutor_attrs[:sex]
+      end
+
+      it "saves and returns the age" do
+        expect(response_json['attributes']['age']).to eq tutor_attrs[:age]
+      end
     end
 
-    it "saves and returns the email" do
-      expect(response_json['attributes']['email']).to eq tutor_attrs[:email]
+    describe "Different user types" do
+
+      context "not setting any type value of any kind" do
+
+        before { post '/signup', params: params }
+
+        it { expect(response).to have_http_status(200) }
+
+        it "saves and returns a regular ol' User type" do
+          expect(response_json['type']).to eq 'users'
+        end
+      end
+
+      context "setting type=Tutor" do
+
+        before do
+          params[:user][:type] = 'Tutor'
+          post '/signup', params: params
+        end
+
+        it { expect(response).to have_http_status(200) }
+
+        it "saves and returns a Tutor type" do
+          expect(response_json['type']).to eq 'tutors'
+        end
+
+        it "saves and returns the hourly_rate" do
+          expect(response_json['attributes']['hourly_rate'].to_f).to eq tutor_attrs[:hourly_rate]
+        end
+
+        it "saves and returns the max_distance_available" do
+          expect(response_json['attributes']['max_distance_available'].to_f).to eq tutor_attrs[:max_distance_available]
+        end
+
+        it "saves and returns the biography" do
+          expect(response_json['attributes']['biography']).to eq tutor_attrs[:biography]
+        end
+      end
+
+      context "setting type=Student" do
+
+        before do
+          params[:user][:type] = 'Student'
+          post '/signup', params: params
+        end
+
+        it { expect(response).to have_http_status(200) }
+
+        it "saves and returns a Student type" do
+          expect(response_json['type']).to eq 'students'
+        end
+      end
     end
-
-    it "saves and returns the name" do
-      expect(response_json['attributes']['name']).to eq tutor_attrs[:name]
-    end
-
-    it "saves and returns last_seen (sidestep format issues by comparing both timestamps)" do
-      expect(Time.parse(response_json['attributes']['last_seen']).to_i).to eq tutor_attrs[:last_seen].to_i
-    end
-
-    it "saves and returns the sex" do
-      expect(response_json['attributes']['sex']).to eq tutor_attrs[:sex]
-    end
-
-    it "saves and returns the age" do
-      expect(response_json['attributes']['age']).to eq tutor_attrs[:age]
-    end
-
-    it "saves and returns the hourly_rate" do
-      expect(response_json['attributes']['hourly_rate'].to_f).to eq tutor_attrs[:hourly_rate]
-    end
-
-    it "saves and returns the max_distance_available" do
-      expect(response_json['attributes']['max_distance_available'].to_f).to eq tutor_attrs[:max_distance_available]
-    end
-
-    it "saves and returns the biography" do
-      expect(response_json['attributes']['biography']).to eq tutor_attrs[:biography]
-    end
-
-
   end
 
   context "incorrect params" do
