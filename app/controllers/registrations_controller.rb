@@ -14,7 +14,7 @@ class RegistrationsController < Devise::RegistrationsController
   protected
 
   def tutor_params
-    params.require(:user).permit(:email, :password, :name, :last_seen, :sex, :age, :biography, :hourly_rate, :max_distance_available, :profile_image)
+    params.require(:user).permit(:email, :password, :password_confirmation, :name, :last_seen, :sex, :age, :biography, :hourly_rate, :max_distance_available, :profile_image)
   end
 
   def resource_class

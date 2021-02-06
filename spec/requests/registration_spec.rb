@@ -33,15 +33,14 @@ describe 'POST /signup', type: :request do
       }
     }
   }
+
   context "correct params" do
 
-    before {
-      post '/signup', params: params 
-    }
+    before { post '/signup', params: params }
 
-
-
-    it { expect(response).to have_http_status(200) }
+    it "returns 200 OK" do
+      expect(response).to have_http_status(200)
+    end
 
     it "saves and returns the email" do
       expect(response_json['attributes']['email']).to eq tutor_attrs[:email]
@@ -80,6 +79,48 @@ describe 'POST /signup', type: :request do
 
   context "incorrect params" do
 
+    describe "password is too short" do
+
+      before do
+        params[:user][:password] = 'f'
+        params[:user][:password_confirmation] = 'f'
+        post '/signup', params: params
+      end
+
+      it { expect(response).to have_http_status(400) }
+
+      it "responds with an error saying the password is too short" do 
+        expect(response_json['errors'][0]['detail']).to eq({ 'password' => ["is too short (minimum is 6 characters)"] })
+      end
+    end
+
+    describe "password_confirmation is missing" do
+
+      before do
+        params[:user].delete :password_confirmation 
+        post '/signup', params: params
+      end
+
+      it { expect(response).to have_http_status(400) }
+
+      it "responds with an error saying that password_confirmation can't be blank" do
+        expect(response_json['errors'][0]['detail']).to eq({ 'password_confirmation' => ["can't be blank"] })
+      end
+    end
+
+    describe "password_confirmation doesn't match password" do
+
+      before do 
+        params[:user][:password_confirmation] = 'blargh'
+        post '/signup', params: params
+      end
+
+      it { expect(response).to have_http_status(400) }
+
+      it "responds with an error saying that password_confirmation doesn't match password" do
+        expect(response_json['errors'][0]['detail']).to eq({ 'password_confirmation' => ["doesn't match Password"]})
+      end
+    end
   end
 
   it "increments the uploaded-file count" do
