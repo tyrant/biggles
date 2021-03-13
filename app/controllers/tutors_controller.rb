@@ -10,7 +10,6 @@ class TutorsController < ApplicationController
   end
 
   def update
-
   end
 
   # rescue_from Exception do |e|

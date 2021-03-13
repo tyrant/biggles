@@ -18,7 +18,7 @@ class User < ApplicationRecord
   # User registration was straight-up ignoring :password_registration. Search me why.
   # https://stackoverflow.com/questions/15661815/devise-and-password-confirmation-validation 
   # covered how to add it again.
-  validates :password_confirmation, presence: true
+  validates :password_confirmation, presence: true, on: :create
 
   has_one_base64_attached :profile_image
 
