@@ -17,7 +17,8 @@ describe 'POST /signup', type: :request do
         email: tutor_attrs[:email],
         password: tutor_attrs[:password],
         password_confirmation: tutor_attrs[:password],
-        name: tutor_attrs[:name],
+        first_name: tutor_attrs[:first_name],
+        last_name: tutor_attrs[:last_name],
         last_seen: tutor_attrs[:last_seen],
         sex: tutor_attrs[:sex],
         age: tutor_attrs[:age],
@@ -49,8 +50,12 @@ describe 'POST /signup', type: :request do
         expect(response_json['attributes']['email']).to eq tutor_attrs[:email]
       end
 
-      it "saves and returns the name" do
-        expect(response_json['attributes']['name']).to eq tutor_attrs[:name]
+      it "saves and returns the first name" do
+        expect(response_json['attributes']['first_name']).to eq tutor_attrs[:first_name]
+      end
+
+      it "saves and returns the last name" do
+        expect(response_json['attributes']['last_name']).to eq tutor_attrs[:last_name]
       end
 
       it "saves and returns last_seen (sidestep format issues by comparing both timestamps)" do

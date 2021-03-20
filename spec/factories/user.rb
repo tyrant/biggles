@@ -3,7 +3,8 @@ FactoryBot.define do
     email { Faker::Internet.email }
     password { '12345678' }
     password_confirmation { '12345678' }
-    name { Faker::Games::SonicTheHedgehog.character }
+    first_name { Faker::Games::SonicTheHedgehog.character }
+    last_name { Faker::Games::SonicTheHedgehog.character }
     last_seen { Faker::Time.between(from: DateTime.now - 6.weeks, to: DateTime.now + 6.weeks) }
     sex { Faker::Gender.type }
     age { Faker::Number.between(from: 1, to: 107) }
