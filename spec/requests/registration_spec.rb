@@ -31,7 +31,7 @@ describe 'POST /signup', type: :request do
 
         city: tutor_attrs[:city],
 
-        postcode: { id: postcode.id },
+        postcode: postcode.code,
 
         subject: tutor_attrs[:subject]
       }
@@ -68,6 +68,15 @@ describe 'POST /signup', type: :request do
 
       it "saves and returns the age" do
         expect(response_json['attributes']['age']).to eq tutor_attrs[:age]
+      end
+    end
+
+    describe "just regular user relationships" do
+
+      before { post '/signup', params: params }
+
+      it "saves and returns the postcode ID" do
+        expect(response_json['relationships']['postcode']['data']['id']).to eq postcode.id
       end
     end
 
