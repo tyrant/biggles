@@ -100,10 +100,10 @@ class TutorsController < ApplicationController
     end
 
     if errors.length > 0
-          render json: {
-      status: "A cheapass like you can't afford me, can you, #{ Faker.any_character }, not with JSON that invalid",
-      error: errors 
-    }.to_json, status: 402
+      render json: {
+        status: "A cheapass like you can't afford me, can you, #{ Faker.any_character }, not with JSON that invalid",
+        error: errors 
+      }.to_json, status: 402
     end
   end
 

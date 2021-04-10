@@ -13,44 +13,44 @@ class Student < User
 
   def as_json(params={})
     super.deep_merge({
-      type: 'students',
-      attributes: {
-
-      },
-      relationships: { 
-        saved_profiles: {
-          data: saved_profiles.map do |saved_profile|
-              {
-                type: 'saved_profiles',
-                id: saved_profile.id,
-              }
-            end
+      data: {
+        type: 'students',
+        attributes: {},
+        relationships: { 
+          saved_profiles: {
+            data: saved_profiles.map do |saved_profile|
+                {
+                  type: 'saved_profiles',
+                  id: saved_profile.id,
+                }
+              end
+          },
+          saved_tutors: {
+            data: saved_tutors.map do |saved_tutor|
+                {
+                  type: 'saved_tutors',
+                  id: saved_tutor.id,
+                }
+              end
+          },
+          student_subjects: {
+            data: student_subjects.map do |student_subject|
+                {
+                  type: 'student_subjects',
+                  id: student_subject.id,
+                }
+              end
+          },
+          reviews: {
+            data: reviews.map do |review|
+                {
+                  type: 'reviews',
+                  id: review.id,
+                }
+              end
+          },
         },
-        saved_tutors: {
-          data: saved_tutors.map do |saved_tutor|
-              {
-                type: 'saved_tutors',
-                id: saved_tutor.id,
-              }
-            end
-        },
-        student_subjects: {
-          data: student_subjects.map do |student_subject|
-              {
-                type: 'student_subjects',
-                id: student_subject.id,
-              }
-            end
-        },
-        reviews: {
-          data: reviews.map do |review|
-              {
-                type: 'reviews',
-                id: review.id,
-              }
-            end
-        },
-      },
+      }
     })
   end
 end

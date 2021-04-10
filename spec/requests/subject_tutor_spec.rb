@@ -50,7 +50,7 @@ describe "SubjectTutor management" do
       }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'subject_tutors' }
+      it { expect(response_json['data']['type']).to eq 'subject_tutors' }
     end
 
     context "Non-admin creating a SubjectTutor on behalf of another saver" do
@@ -80,7 +80,7 @@ describe "SubjectTutor management" do
       }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'subject_tutors' }
+      it { expect(response_json['data']['type']).to eq 'subject_tutors' }
     end
 
     context "Owner of this SubjectTutor logged in *and* blacklisted" do
@@ -103,12 +103,12 @@ describe "SubjectTutor management" do
       let(:admin) { true }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'subject_tutors' }
+      it { expect(response_json['data']['type']).to eq 'subject_tutors' }
     end
 
     context "Owner logged in" do
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'subject_tutors' }
+      it { expect(response_json['data']['type']).to eq 'subject_tutors' }
     end
 
     context "Non-owner logged in" do

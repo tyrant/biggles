@@ -50,7 +50,7 @@ describe "LanguageUser management" do
       }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'student_subjects' }
+      it { expect(response_json['data']['type']).to eq 'student_subjects' }
     end
 
     context "Non-admin creating a StudentSubject on behalf of another student" do
@@ -80,7 +80,7 @@ describe "LanguageUser management" do
       }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'student_subjects' }
+      it { expect(response_json['data']['type']).to eq 'student_subjects' }
     end
 
     context "Owner of this StudentSubject logged in *and* blacklisted" do
@@ -103,12 +103,12 @@ describe "LanguageUser management" do
       let(:admin) { true }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'student_subjects' }
+      it { expect(response_json['data']['type']).to eq 'student_subjects' }
     end
 
     context "Owner logged in" do
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'student_subjects' }
+      it { expect(response_json['data']['type']).to eq 'student_subjects' }
     end
 
     context "Non-owner logged in" do
