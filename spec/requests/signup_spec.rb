@@ -12,7 +12,7 @@ describe 'POST /signup', type: :request do
     before { post url, params: params }
 
     it { expect(response.status).to eq 200 }
-    it { expect(JSON.parse(response.body)['attributes']['email']).to eq params[:user][:email] }
+    it { expect(response_json['data']['attributes']['email']).to eq params[:user][:email] }
   end
 
   context 'User already exists in the database' do
@@ -23,6 +23,6 @@ describe 'POST /signup', type: :request do
     }
 
     it { expect(response.status).to eq 400 }
-    it { expect(JSON.parse(response.body)['errors'][0]['title']).to eq('Bad Request') }
+    it { expect(response_json['errors'][0]['title']).to eq('Bad Request') }
   end
 end

@@ -63,29 +63,31 @@ class Tutor < User
 
   def as_json(params={})
     super.deep_merge({
-      type: 'tutors',
-      attributes: {
-        max_distance_available: max_distance_available,
-        hourly_rate: hourly_rate,
-        biography: biography,
-      },
-      relationships: {
-        tutor_availabilities: {
-          data: tutor_availabilities.map do |tutor_availability|
-              {
-                type: 'tutor_availabilities',
-                id: tutor_availability.id,
-              } 
-            end
+      data: {
+        type: 'tutors',
+        attributes: {
+          max_distance_available: max_distance_available,
+          hourly_rate: hourly_rate,
+          biography: biography,
         },
-        subject_tutors: {
-          data: subject_tutors.map do |subject_tutor|
-              {
-                type: 'subject_tutors',
-                id: subject_tutor.id,
-              }
-            end
-        },
+        relationships: {
+          tutor_availabilities: {
+            data: tutor_availabilities.map do |tutor_availability|
+                {
+                  type: 'tutor_availabilities',
+                  id: tutor_availability.id,
+                } 
+              end
+          },
+          subject_tutors: {
+            data: subject_tutors.map do |subject_tutor|
+                {
+                  type: 'subject_tutors',
+                  id: subject_tutor.id,
+                }
+              end
+          },
+        }
       }
     })
   end

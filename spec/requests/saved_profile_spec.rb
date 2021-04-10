@@ -50,7 +50,7 @@ describe "SavedProfile management" do
       }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'saved_profiles' }
+      it { expect(response_json['data']['type']).to eq 'saved_profiles' }
     end
 
     context "Non-admin creating a SavedProfile on behalf of another saver" do
@@ -80,7 +80,7 @@ describe "SavedProfile management" do
       }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'saved_profiles' }
+      it { expect(response_json['data']['type']).to eq 'saved_profiles' }
     end
 
     context "Owner of this SavedProfile logged in *and* blacklisted" do
@@ -103,12 +103,12 @@ describe "SavedProfile management" do
       let(:admin) { true }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'saved_profiles' }
+      it { expect(response_json['data']['type']).to eq 'saved_profiles' }
     end
 
     context "Owner logged in" do
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'saved_profiles' }
+      it { expect(response_json['data']['type']).to eq 'saved_profiles' }
     end
 
     context "Non-owner logged in" do

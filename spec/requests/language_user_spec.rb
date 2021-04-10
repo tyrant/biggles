@@ -50,7 +50,7 @@ describe "LanguageUser management" do
       }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'language_users' }
+      it { expect(response_json['data']['type']).to eq 'language_users' }
     end
 
     context "Non-admin creating a LanguageUser on behalf of another user" do
@@ -80,7 +80,7 @@ describe "LanguageUser management" do
       }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'language_users' }
+      it { expect(response_json['data']['type']).to eq 'language_users' }
     end
 
     context "Owner of this LanguageUser logged in *and* blacklisted" do
@@ -103,12 +103,12 @@ describe "LanguageUser management" do
       let(:admin) { true }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'language_users' }
+      it { expect(response_json['data']['type']).to eq 'language_users' }
     end
 
     context "Owner logged in" do
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'language_users' }
+      it { expect(response_json['data']['type']).to eq 'language_users' }
     end
 
     context "Non-owner logged in" do

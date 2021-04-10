@@ -50,7 +50,7 @@ describe "TutorAvailability management" do
       }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'tutor_availabilities' }
+      it { expect(response_json['data']['type']).to eq 'tutor_availabilities' }
     end
 
     context "Non-admin creating a TutorAvailability on behalf of another tutor" do
@@ -80,7 +80,7 @@ describe "TutorAvailability management" do
       }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'tutor_availabilities' }
+      it { expect(response_json['data']['type']).to eq 'tutor_availabilities' }
     end
 
     context "Owner of this TutorAvailability logged in *and* blacklisted" do
@@ -103,12 +103,12 @@ describe "TutorAvailability management" do
       let(:admin) { true }
 
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'tutor_availabilities' }
+      it { expect(response_json['data']['type']).to eq 'tutor_availabilities' }
     end
 
     context "Owner logged in" do
       it { expect(response.status).to eq 200 }
-      it { expect(response_json['type']).to eq 'tutor_availabilities' }
+      it { expect(response_json['data']['type']).to eq 'tutor_availabilities' }
     end
 
     context "Non-owner logged in" do

@@ -47,27 +47,27 @@ describe 'POST /signup', type: :request do
       it { expect(response).to have_http_status(200) }
 
       it "saves and returns the email" do
-        expect(response_json['attributes']['email']).to eq tutor_attrs[:email]
+        expect(response_json['data']['attributes']['email']).to eq tutor_attrs[:email]
       end
 
       it "saves and returns the first name" do
-        expect(response_json['attributes']['first_name']).to eq tutor_attrs[:first_name]
+        expect(response_json['data']['attributes']['first_name']).to eq tutor_attrs[:first_name]
       end
 
       it "saves and returns the last name" do
-        expect(response_json['attributes']['last_name']).to eq tutor_attrs[:last_name]
+        expect(response_json['data']['attributes']['last_name']).to eq tutor_attrs[:last_name]
       end
 
       it "saves and returns last_seen (sidestep format issues by comparing both timestamps)" do
-        expect(Time.parse(response_json['attributes']['last_seen']).to_i).to eq tutor_attrs[:last_seen].to_i
+        expect(Time.parse(response_json['data']['attributes']['last_seen']).to_i).to eq tutor_attrs[:last_seen].to_i
       end
 
       it "saves and returns the sex" do
-        expect(response_json['attributes']['sex']).to eq tutor_attrs[:sex]
+        expect(response_json['data']['attributes']['sex']).to eq tutor_attrs[:sex]
       end
 
       it "saves and returns the age" do
-        expect(response_json['attributes']['age']).to eq tutor_attrs[:age]
+        expect(response_json['data']['attributes']['age']).to eq tutor_attrs[:age]
       end
     end
 
@@ -76,7 +76,7 @@ describe 'POST /signup', type: :request do
       before { post '/signup', params: params }
 
       it "saves and returns the postcode ID" do
-        expect(response_json['relationships']['postcode']['data']['id']).to eq postcode.id
+        expect(response_json['data']['relationships']['postcode']['data']['id']).to eq postcode.id
       end
     end
 
@@ -89,7 +89,7 @@ describe 'POST /signup', type: :request do
         it { expect(response).to have_http_status(200) }
 
         it "saves and returns a regular ol' User type" do
-          expect(response_json['type']).to eq 'users'
+          expect(response_json['data']['type']).to eq 'users'
         end
       end
 
@@ -103,19 +103,19 @@ describe 'POST /signup', type: :request do
         it { expect(response).to have_http_status(200) }
 
         it "saves and returns a Tutor type" do
-          expect(response_json['type']).to eq 'tutors'
+          expect(response_json['data']['type']).to eq 'tutors'
         end
 
         it "saves and returns the hourly_rate" do
-          expect(response_json['attributes']['hourly_rate'].to_f).to eq tutor_attrs[:hourly_rate]
+          expect(response_json['data']['attributes']['hourly_rate'].to_f).to eq tutor_attrs[:hourly_rate]
         end
 
         it "saves and returns the max_distance_available" do
-          expect(response_json['attributes']['max_distance_available'].to_f).to eq tutor_attrs[:max_distance_available]
+          expect(response_json['data']['attributes']['max_distance_available'].to_f).to eq tutor_attrs[:max_distance_available]
         end
 
         it "saves and returns the biography" do
-          expect(response_json['attributes']['biography']).to eq tutor_attrs[:biography]
+          expect(response_json['data']['attributes']['biography']).to eq tutor_attrs[:biography]
         end
       end
 
@@ -129,7 +129,7 @@ describe 'POST /signup', type: :request do
         it { expect(response).to have_http_status(200) }
 
         it "saves and returns a Student type" do
-          expect(response_json['type']).to eq 'students'
+          expect(response_json['data']['type']).to eq 'students'
         end
       end
     end

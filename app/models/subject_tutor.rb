@@ -5,20 +5,22 @@ class SubjectTutor < ApplicationRecord
 
   def as_json(params={})
     {
-      id: 'id',
-      type: 'subject_tutors',
-      attributes: {},
-      relationships: {
-        subject: {
-          data: {
-            id: subject.id,
-            type: 'subjects',
-          }
-        },
-        tutor: {
-          data: {
-            id: tutor.id,
-            type: 'tutors'
+      data: {
+        id: 'id',
+        type: 'subject_tutors',
+        attributes: {},
+        relationships: {
+          subject: {
+            data: {
+              id: subject.id,
+              type: 'subjects',
+            }
+          },
+          tutor: {
+            data: {
+              id: tutor.id,
+              type: 'tutors'
+            }
           }
         }
       }

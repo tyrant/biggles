@@ -5,20 +5,22 @@ class LanguageUser < ApplicationRecord
 
   def as_json(params={})
     {
-      id: id,
-      type: 'language_users',
-      attributes: {},
-      relationships: {
-        language: {
-          data: {
-            id: language.id,
-            type: 'languages',
-          }
-        },
-        user: {
-          data: {
-            id: user.id,
-            type: 'users'
+      data: {
+        id: id,
+        type: 'language_users',
+        attributes: {},
+        relationships: {
+          language: {
+            data: {
+              id: language.id,
+              type: 'languages',
+            }
+          },
+          user: {
+            data: {
+              id: user.id,
+              type: 'users'
+            }
           }
         }
       }

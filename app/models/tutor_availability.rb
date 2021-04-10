@@ -5,20 +5,22 @@ class TutorAvailability < ApplicationRecord
 
   def as_json(params={})
     {
-      id: 'id',
-      type: 'tutor_availabilities',
-      attributes: {},
-      relationships: {
-        tutor: {
-          data: {
-            id: tutor.id,
-            type: 'tutors',
-          }
-        },
-        availability: {
-          data: {
-            id: availability.id,
-            type: 'availabilities'
+      data: {
+        id: 'id',
+        type: 'tutor_availabilities',
+        attributes: {},
+        relationships: {
+          tutor: {
+            data: {
+              id: tutor.id,
+              type: 'tutors',
+            }
+          },
+          availability: {
+            data: {
+              id: availability.id,
+              type: 'availabilities'
+            }
           }
         }
       }

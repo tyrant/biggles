@@ -11,20 +11,22 @@ class SavedProfile < ApplicationRecord
 
   def as_json(params={})
     {
-      id: id,
-      type: 'saved_profiles',
-      attributes: {},
-      relationships: {
-        saver: {
-          data: {
-            id: saver.id,
-            type: 'students',
-          }
-        },
-        savee: {
-          data: {
-            id: savee.id,
-            type: 'tutors',
+      data: {
+        id: id,
+        type: 'saved_profiles',
+        attributes: {},
+        relationships: {
+          saver: {
+            data: {
+              id: saver.id,
+              type: 'students',
+            }
+          },
+          savee: {
+            data: {
+              id: savee.id,
+              type: 'tutors',
+            }
           }
         }
       }
