@@ -41,7 +41,16 @@ lowest_postcode_id = Postcode.select(:id).order('id asc').limit(1)[0].id
 
 # Create a bunch of Students
 2.upto(6) do |i|
-  s = Student.create(email: "#{i}@s.com", name: "s#{i}", password: '12345678', password_confirmation: '12345678', postcode: Postcode.find_by_id(lowest_postcode_id+i*100))
+  s_attrs = {
+    email: "#{i}@s.com", 
+    first_name: "sf_#{i}",
+    last_name: "sl_#{i}",
+    password: '12345678', 
+    password_confirmation: '12345678', 
+    postcode: Postcode.find_by_id(lowest_postcode_id+i*100)
+  }
+
+  s = Student.create(s_attrs)
   if s.valid?
     ap "Created student with id=#{ s.id }"
   else
@@ -51,26 +60,36 @@ end
 
 # Create a bunch of Tutors
 2.upto(25) do |i|
-  t = Tutor.create(email: "#{i}@t.com", name: "t#{i}", password: '12345678', password_confirmation: '12345678', postcode: Postcode.find_by_id(lowest_postcode_id+i*100))
+  t_attrs = {
+    email: "#{i}@t.com", 
+    first_name: "tf_#{i}", 
+    last_name: "tl_#{i}",
+    password: '12345678', 
+    password_confirmation: '12345678', 
+    postcode: Postcode.find_by_id(lowest_postcode_id+i*100)
+  }
+
+  t = Tutor.create(t_attrs)
   ap "Created tutor with id=#{ t.id }"
 end
 
 # Assign two random Languages to each User, of both types
 User.all.each do |user|
-  Language.limit(2).order("RANDOM()").each do |language|
+  Language.order("RANDOM()").limit(2).each do |language|
     LanguageUser.create language: language, user: user
-    ap "Created LanguageUser with language=#{ language.name }, user=#{ user.name }"
+    ap "Created LanguageUser with language=#{ language.name }, user=#{ user.first_name } #{ user.last_name }"
   end
 end
 
 # Assign two random Subjects and Availabilities to each Tutor
 Tutor.all.each do |tutor|
-  Subject.limit(2).order("RANDOM()").each do |subject|
+  Subject.order("RANDOM()").limit(2).each do |subject|
     SubjectTutor.create subject: subject, tutor: tutor
-    ap "Created SubjectTutor with subject=#{ subject.name }, tutor=#{ tutor.name }"
+    ap "Created SubjectTutor with subject=#{ subject.name }, tutor=#{ tutor.first_name } #{ tutor.last_name }"
   end
-  Availability.limit(2).order("RANDOM()").each do |availability|
+
+  Availability.order("RANDOM()").limit(2).each do |availability|
     TutorAvailability.create tutor: tutor, availability: availability
-    ap "Created TutorAvailability with tutor=#{ tutor.name }, availability=#{ availability.name }"
+    ap "Created TutorAvailability with availability=#{ availability.name }, tutor=#{ tutor.first_name } #{ tutor.last_name }"
   end
 end
