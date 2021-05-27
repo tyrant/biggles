@@ -48,9 +48,13 @@ class Tutor < User
       query = query.where('users.hourly_rate < ?', params[:rate][:high]) if params[:rate].key? :high
     end
 
-    # If :postcode is present, order by distance from it, otherwise by updated_at.
+    # params contains a :postcode? If the database also contains that postcode,
+    # then filter by it and order the search results by distance from it.
+    # If the database doesn't contain it, then 
+    # is present, order by distance from it, otherwise by updated_at.
     if params.key? :postcode
-      if p = Postcode.find_by_code(params[:postcode])
+      query = query.joins(:postcode).where('postcodes.code = ?', params[:postcode])      
+      if p = Postcode.find_by(code: params[:postcode])
         query = query.within(params[:distance], origin: [p.latitude, p.longitude]) if params.key? :distance
         query = query.joins(:postcode).by_distance(origin: [p.latitude, p.longitude])
       end

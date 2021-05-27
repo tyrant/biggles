@@ -154,6 +154,14 @@ describe Tutor do
         end
       end
 
+      context "Supplying a postcode not in the database" do
+
+        it "returns zero results" do
+          query = Tutor.search({ postcode: 'blargh code not present' })
+          expect(query.length).to eq 0
+        end
+      end
+
       context "Supplying the postcode for p31" do
  
         context "Supplying a distance" do
