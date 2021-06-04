@@ -8,17 +8,17 @@ class Postcode < ApplicationRecord
   def as_json(params={})
   	{
   	  data: {
-	  	id: id,
-	  	type: 'postcodes',
-	  	attributes: { 
-		  code: code,
-		  county: county,
-		  latitude: latitude,
-		  longitude: longitude,
-		  name: name,
-		  state: state
+	  	  id: id,
+	  	  type: 'postcodes',
+	  	  attributes: { 
+		      code: code,
+		      county: county,
+		      latitude: latitude,
+		      longitude: longitude,
+		      name: name,
+		      state: state
         }
-	  }
+	    }
     }
   end
 end
