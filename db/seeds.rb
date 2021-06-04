@@ -1,5 +1,10 @@
 require 'csv'
 
+if Rails.env.production?
+  puts "Are you nuts? We're in Prod! `rake db:seed` will wipe the entire database! You're a numpty. Exiting now."
+  exit
+end
+
 [
   LanguageUser,
   SubjectTutor,
