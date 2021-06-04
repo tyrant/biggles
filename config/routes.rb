@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   resources :tutors, only: [:update] do 
     post 'search', on: :collection
   end
+  resources :messages, only: [:index, :create, :update, :destroy]
   
   root to: "home#index"
 end

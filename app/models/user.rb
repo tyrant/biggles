@@ -9,11 +9,22 @@ class User < ApplicationRecord
     :validatable, :lastseenable, :jwt_authenticatable, 
     jwt_revocation_strategy: JWTBlacklist
 
-  has_many :language_users, inverse_of: :user
-  has_many :languages, through: :language_users, inverse_of: :users
-  has_many :received_messages, class_name: 'Message', inverse_of: :messagee
-  has_many :sent_messages, class_name: 'Message', inverse_of: :messager
-  belongs_to :postcode, inverse_of: :users, optional: true
+  has_many :language_users, 
+    inverse_of: :user
+  has_many :languages, 
+    through: :language_users, 
+    inverse_of: :users
+  has_many :received_messages,
+    foreign_key: :messagee_id,
+    class_name: 'Message', 
+    inverse_of: :messagee
+  has_many :sent_messages,
+    foreign_key: :messager_id,
+    class_name: 'Message',
+    inverse_of: :messager
+  belongs_to :postcode,
+    inverse_of: :users, 
+    optional: true
 
   # User registration was straight-up ignoring :password_registration. Search me why.
   # https://stackoverflow.com/questions/15661815/devise-and-password-confirmation-validation 

@@ -37,12 +37,14 @@ class Ability
     end
 
     can :manage, LanguageUser, user_id: user.id
-    can :manage, Message, messager_id: user.id
     can :manage, Review, reviewer_id: user.id
     can :manage, SavedProfile, saver_id: user.id
     can :manage, StudentSubject, student_id: user.id
     can :manage, SubjectTutor, tutor_id: user.id
     can :manage, User, id: user.id
     can :manage, TutorAvailability, tutor_id: user.id
+    can :manage, Message do |message|
+      [message.messager_id, message.messagee_id].include? user.id
+    end
   end
 end
