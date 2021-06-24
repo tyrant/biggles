@@ -54,24 +54,58 @@ describe "Messages" do
 
     let!(:messager) { create :user }
     let!(:messagee) { create :user }
-    let!(:message_attrs) { attributes_for :message, messagee_id: messagee.id }
     
     context "Logged in" do
-      before {
+
+      before do
         post '/messages', 
           headers: jwt_headers_for(messager), 
           params: { message: message_attrs }.to_json
-      }
-
-      it { expect(response.status).to eq 200 }
-      it "creates and returns a new Message object with messager=current_user" do
-        expect(response_json['data']['relationships']['messager']['data']['id'])
-          .to eq messager.id
       end
 
-      it "creates and returns a new Message object with messagee=params[messagee]" do
-        expect(response_json['data']['relationships']['messagee']['data']['id'])
-          .to eq messagee.id
+      context "Happy params" do
+
+        let!(:message_attrs) do
+          attributes_for :message, messagee_id: messagee.id
+        end
+
+        it { expect(response.status).to eq 200 }
+        it "creates and returns a new Message object with messager=current_user" do
+          expect(response_json['data']['relationships']['messager']['data']['id'])
+            .to eq messager.id
+        end
+
+        it "creates and returns a new Message object with messagee=params[messagee]" do
+          expect(response_json['data']['relationships']['messagee']['data']['id'])
+            .to eq messagee.id
+        end
+      end
+
+      context "Sad params" do
+
+        context "Content is missing" do
+
+          let!(:message_attrs) do
+            attributes_for(:message, messagee_id: messagee.id).except!(:content)
+          end
+
+          it { expect(response.status).to eq 422 }
+          it "returns an error message complaining about the lack of content" do
+            expect(response_json['errors']).to eq({ "content" => ["can't be blank"] })
+          end
+        end
+
+        context "Messagee ID is missing" do
+
+          let!(:message_attrs) do
+            attributes_for(:message).except!(:messagee_id)
+          end
+
+          it { expect(response.status).to eq 422 }
+          it "returns an error message complaining about the missing messagee ID" do
+            expect(response_json['errors']).to eq({ "messagee" => ["must exist"] })
+          end
+        end
       end
     end
 
@@ -80,6 +114,8 @@ describe "Messages" do
       it { expect(response.status).to eq 401 }
     end
   end
+
+
 
   # Most common use case: populating Message#seen_at: defaults to nil, but becomes a # timestamp when viewed from the client. 
   describe "Updating an existing message" do

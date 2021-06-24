@@ -19,7 +19,7 @@ class MessagesController < ApplicationController
       message.save!
       render json: message
     else
-      render json: message.errors, status: 422
+      render json: { errors: message.errors }, status: 422
     end
   end
 
@@ -29,7 +29,7 @@ class MessagesController < ApplicationController
     if @message.valid?
       render json: @message
     else
-      render json: @message.errors, status: 422
+      render json: { errors: @message.errors }, status: 422
     end
   end
 

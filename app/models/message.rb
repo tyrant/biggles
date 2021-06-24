@@ -7,6 +7,8 @@ class Message < ApplicationRecord
     class_name: 'User',
     inverse_of: :received_messages
 
+  validates :content, presence: true
+
   def as_json(params={})
     {
       data: { 
