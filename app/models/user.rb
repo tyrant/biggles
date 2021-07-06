@@ -1,4 +1,9 @@
+# https://guides.rubyonrails.org/autoloading_and_reloading_constants.html#single-table-inheritance
+require "sti_preload"
+
 class User < ApplicationRecord
+  include StiPreload
+
   include Rails.application.routes.url_helpers
 
   rolify
