@@ -20,11 +20,13 @@ gem 'geokit-rails'
 gem 'json-schema'
 gem 'faker'
 gem 'active_storage_base64'
+gem 'jsonapi-resources', '0.9.11'
+gem 'pry', '~> 0.13.1'
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
-  gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
+  #gem 'spring'
+  #gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'capistrano-rails'
   gem 'capistrano-rbenv'
   gem "capistrano-bundler"
