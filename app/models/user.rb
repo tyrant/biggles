@@ -42,6 +42,8 @@ class User < ApplicationRecord
 
   acts_as_mappable through: :postcode
 
+
+
   def as_json(params={})
     {
       data: { 

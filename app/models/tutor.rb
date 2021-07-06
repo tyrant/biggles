@@ -1,10 +1,10 @@
 class Tutor < User
 
-  has_many :saved_profiles, 
+  has_many :saved_profiles,
     inverse_of: :savee
-  has_many :saved_students, 
+  has_many :saved_students, # The list
     through: :saved_profile, 
-    inverse_of: :saved_tutors
+    inverse_of: :saved_tutors 
   has_many :subject_tutors, 
     inverse_of: :tutor
   has_many :subjects, 

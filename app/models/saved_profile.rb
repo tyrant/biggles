@@ -1,3 +1,5 @@
+# Join objects. These let Students keep track of Tutors. 
+
 class SavedProfile < ApplicationRecord
 
   belongs_to :saver, 
