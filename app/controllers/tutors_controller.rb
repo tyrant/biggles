@@ -6,24 +6,33 @@ class TutorsController < ApplicationController
   before_action :validate_params!
 
   def search
-    render json: Tutor.search(tutor_params)
+    tutors = Tutor.search(tutor_params)
+    tutor_resources = tutors.map do |tutor| 
+      TutorResource.new(tutor, nil)
+    end
+
+    serialized_tutor_resources = JSONAPI::ResourceSerializer.new(
+        TutorResource, 
+        { include: ['tutor_availabilities', 
+                    'tutor_availabilities.availabilities',
+                    'subject_tutors',
+                    'subject_tutors.subjects']
+        }
+      ).serialize_to_hash(tutor_resources)
+    
+    render json: tutors
+    #render json: serialized_tutor_resources
   end
 
   def update
   end
-
-  # rescue_from Exception do |e|
-  #   render json: {
-  #     status: "Oh no!",
-  #     message: e.message,
-  #   }, status: 500
-  # end
 
   private
 
   def tutor_params
     params.permit!.to_h
   end
+
 
   def validate_params!
     tutor_search_api_schema = {
@@ -106,5 +115,4 @@ class TutorsController < ApplicationController
       }.to_json, status: 402
     end
   end
-
 end
