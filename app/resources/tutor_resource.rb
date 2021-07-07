@@ -5,14 +5,18 @@ class TutorResource < UserResource
   # has_many :saved_profiles, 
   #   foreign_key: :savee_id,
   #   always_include_linkage_data: true
-  has_many :saved_student
+  has_many :saved_student,
+    exclude_links: :default
 
   has_many :subject_tutors, 
-    always_include_linkage_data: true
+    always_include_linkage_data: true,
+    exclude_links: :default
   has_many :reviews, 
-    foreign_key: :reviewee_id
+    foreign_key: :reviewee_id,
+    exclude_links: :default
   has_many :tutor_availabilities, 
-    always_include_linkage_data: true
+    always_include_linkage_data: true,
+    exclude_links: :default
   
 
   # Comment out the filters for now. We're only adding our resources to aid in

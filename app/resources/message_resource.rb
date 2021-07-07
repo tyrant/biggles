@@ -4,9 +4,13 @@ class MessageResource < JSONAPI::Resource
 
   has_one :messager,
     class_name: 'User',
-    foreign_key: :messager_id
+    foreign_key: :messager_id,
+    exclude_links: :default
   has_one :messagee,
     class_name: 'User',
-    foreign_key: :messagee_id
+    foreign_key: :messagee_id,
+    exclude_links: :default
+
+  exclude_links :default
     
 end

@@ -3,15 +3,21 @@ class UserResource < JSONAPI::Resource
 
   attributes :created_at, :updated_at, :email, :first_name, :last_name, :sex, :age, :last_seen, :profile_image_path
   
-  has_many :languages
+  has_many :languages,
+    exclude_links: :default
   has_many :received_messages,
     foreign_key: 'messagee_id',
-    class_name: 'Message'
+    class_name: 'Message',
+    exclude_links: :default
   has_many :sent_messages,
     foreign_key: 'messager_id',
-    class_name: 'Message'
-  has_one :postcode
+    class_name: 'Message',
+    exclude_links: :default
+  has_one :postcode,
+    exclude_links: :default
 
+  exclude_links :default
+  
   # Getter? https://jsonapi-resources.com/v0.10/guide/resources.html#Flattening-a-Rails-relationship
   def profile_image_path
     if @model.profile_image.blank?
