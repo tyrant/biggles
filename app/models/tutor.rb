@@ -37,7 +37,7 @@ class Tutor < User
     params[:page_size] = 20 unless params.key? :page_size
 
     # '.unscoped': its absence causes deprecation errors. See https://github.com/stefankroes/ancestry/pull/442
-    query = Tutor.unscoped.includes :postcode, :subjects, :languages, :availabilities
+    query = unscoped.includes :postcode, :subjects, :languages, :availabilities
 
     query = query.joins(:availabilities).where('availabilities.id IN (?)', params[:availabilities]) if params.key? :availabilities
     query = query.joins(:subjects).where('subjects.id IN (?)', params[:subjects]) if params.key? :subjects
