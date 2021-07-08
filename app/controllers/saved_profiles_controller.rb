@@ -4,7 +4,12 @@ class SavedProfilesController < ApplicationController
   authorize_resource
 
   def index
-    render json: current_user.saved_profiles
+    render json: JSONAPI::ResourceSerializer.new(
+        SavedProfileResource,
+        { include: ['saver', 'savee'] }
+      ).serialize_to_hash(
+        current_user.saved_profiles.map{|sp| SavedProfileResource.new(sp, nil) }
+      )
   end
 
   def create

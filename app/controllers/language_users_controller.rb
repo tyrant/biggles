@@ -3,8 +3,14 @@ class LanguageUsersController < ApplicationController
   before_action :authenticate_user!
   authorize_resource
 
+  # GET /language_users
   def index
-    render json: current_user.language_users
+    render json: JSONAPI::ResourceSerializer.new(
+        LanguageUserResource,
+        { include: ['language', 'user'] }
+      ).serialize_to_hash(
+        current_user.language_users.map{|lu| LanguageUserResource.new(lu, nil) }
+      )
   end
 
   def create

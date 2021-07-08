@@ -20,8 +20,7 @@ class TutorsController < ApplicationController
         }
       ).serialize_to_hash(tutor_resources)
     
-    render json: tutors
-    #render json: serialized_tutor_resources
+    render json: serialized_tutor_resources
   end
 
   def update

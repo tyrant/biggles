@@ -4,7 +4,12 @@ class StudentSubjectsController < ApplicationController
   authorize_resource
 
   def index
-    render json: current_user.student_subjects
+    render json: JSONAPI::ResourceSerializer.new(
+        StudentSubjectResource,
+        { include: ['student', 'subject'] }
+      ).serialize_to_hash(
+        current_user.student_subjects.map{|ss| StudentSubjectResource.new(ss, nil) }
+      )
   end
 
   def create

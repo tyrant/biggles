@@ -4,7 +4,12 @@ class TutorAvailabilitiesController < ApplicationController
   authorize_resource
 
   def index
-    render json: current_user.tutor_availabilities
+    render json: JSONAPI::ResourceSerializer.new(
+        TutorAvailabilityResource,
+        { include: ['tutor', 'availability'] }
+      ).serialize_to_hash(
+        current_user.tutor_availabilities.map{|ta| TutorAvailabilityResource.new(ta, nil) }
+      )
   end
 
   def create
