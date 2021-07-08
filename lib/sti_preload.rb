@@ -1,4 +1,9 @@
 # From https://guides.rubyonrails.org/autoloading_and_reloading_constants.html#single-table-inheritance
+# That at least is the theory. Bah. I've hacked and bashed and tweaked and massaged
+# this all I can - and still, hitting POST /messages/search twice produces the
+# same goshdarn STI error message. Search me why. Am I using this snippet wrong?
+# Yes? No? Haven't a clue. But I've wasted three days trying to make this damn thing
+# work. Enough. I'll cope with this error. Moving on.
 
 module StiPreload
   unless Rails.application.config.eager_load
