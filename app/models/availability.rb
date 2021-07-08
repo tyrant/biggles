@@ -5,12 +5,3 @@ class Availability < ApplicationRecord
 
   VALUES = ['morning', 'afternoon', 'evening']
 end
-
-
-
-
-  # enum availability: {
-  #   morning: 'morning',
-  #   afternoon: 'afternoon',
-  #   evening: 'evening'
-  # }

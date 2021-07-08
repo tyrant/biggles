@@ -1,4 +1,9 @@
+# https://guides.rubyonrails.org/autoloading_and_reloading_constants.html#single-table-inheritance
+require "sti_preload"
+
 class User < ApplicationRecord
+  include StiPreload
+
   include Rails.application.routes.url_helpers
 
   rolify
@@ -36,51 +41,4 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :language_users
 
   acts_as_mappable through: :postcode
-
-  def as_json(params={})
-    {
-      data: { 
-        id: id,
-        type: 'users',
-        attributes: {
-          created_at: created_at,
-          updated_at: updated_at,
-          email: email,
-          first_name: first_name,
-          last_name: last_name,
-          sex: sex,
-          age: age,
-          last_seen: last_seen,
-          profile_image_path: if profile_image.blank?
-              nil
-            else
-              rails_blob_path(profile_image, only_path: true)
-            end
-        },
-        relationships: {
-          language_users: {
-            data: language_users.map do |language_user|
-                {
-                  type: 'language_users',
-                  id: language_user.id,
-                }
-              end
-          },
-          postcode: if postcode.present? 
-              { 
-                data: {
-                  type: 'postcodes',
-                  id: postcode.id 
-                }
-              }
-            end
-        }
-      },
-      included: [
-        if postcode.present?
-          postcode.as_json
-        end
-      ]
-    }
-  end
 end

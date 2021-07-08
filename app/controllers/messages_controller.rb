@@ -1,12 +1,15 @@
 class MessagesController < ApplicationController
 
   before_action :authenticate_user!
+  before_action :validate_search_params!, only: :search
   load_resource only: [:update, :destroy]
   authorize_resource
 
-  # GET /messages. Yoink all messages received by the current user.
-  def index
-    render json: current_user.received_messages
+  # POST /messages. Search all messages owned by the current user.
+  def search
+    messages = Message.search search_params.merge!(messager_id: current_user.id)
+
+    render json: _serialized!(messages)
   end
 
   # POST /messages. Create a new message: author (messager): current user;
@@ -17,9 +20,9 @@ class MessagesController < ApplicationController
 
     if message.valid?
       message.save!
-      render json: message
+      render json: _serialized!(message)
     else
-      render json: { errors: message.errors }, status: 422
+      render json: { errors: message.errors.messages }, status: 422
     end
   end
 
@@ -27,16 +30,16 @@ class MessagesController < ApplicationController
     @message.update! message_params
 
     if @message.valid?
-      render json: @message
+      render json: _serialized!(@message)
     else
-      render json: { errors: @message.errors }, status: 422
+      render json: { errors: @message.errors.messages }, status: 422
     end
   end
 
   def destroy
     @message.destroy
 
-    render json: @message
+    render json: _serialized!(@message)
   end
 
   private
@@ -45,4 +48,76 @@ class MessagesController < ApplicationController
     params.require(:message).permit(:messagee_id, :content, :seen_at)
   end
 
+  def search_params
+    params.permit!.to_h
+  end
+
+  def validate_search_params!
+    message_search_api_schema = {
+      type: 'object',
+      required: [],
+      properties: {
+        messagee_id: {
+          type: 'integer',
+          minimum: 1,
+        },
+        before: {
+          type: 'string',
+          format: 'date-time',
+        },
+        after: {
+          type: 'sting',
+          format: 'date-time',
+        },
+        seen: { type: 'boolean' },
+        page_number: {
+          type: 'integer',
+          minimum: 0,
+        },
+        page_size: {
+          type: 'integer',
+          minimum: 0,
+        },
+      },
+    }
+
+    errors = JSON::Validator.fully_validate(message_search_api_schema, search_params)
+    
+    # SPECIAL CASE: :before can't be after :after, can it.
+    if errors.length == 0
+      if search_params.key?(:before) && search_params.key?(:after)
+        if DateTime.parse(search_params[:before]) > DateTime.parse(search_params[:after])
+          errors << "The property '#/before' can't be more recent than '#/after, now can it, sweetie-darling"
+        end
+      end
+    end
+
+    if errors.length > 0
+      render json: {
+        status: "A cheapass like you can't afford me, can you, #{ Faker.any_character }, not with JSON that invalid",
+        error: errors 
+      }.to_json, status: 402
+    end
+  end
+
+
+  def _serialized!(records)
+    unless _instance_or_enumerable_of?(records, Message)
+      raise "Oh come on, just a Message or an enumerable collection of them, please"
+    end
+
+    # The ResourceSerializer accepts either a *_Resource or an
+    # array of them. Generate one or the other from our input
+    # Message or collection.
+    message_resources = if records.is_a?(Message)
+      MessageResource.new(records, nil)
+    else
+      records.map{|r| MessageResource.new(r, nil) }
+    end
+
+    JSONAPI::ResourceSerializer.new(
+        MessageResource,
+        { include: ['messager', 'messagee'] }
+      ).serialize_to_hash(message_resources)
+  end
 end

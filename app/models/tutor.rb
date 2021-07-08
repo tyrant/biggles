@@ -1,10 +1,10 @@
 class Tutor < User
 
-  has_many :saved_profiles, 
+  has_many :saved_profiles,
     inverse_of: :savee
-  has_many :saved_students, 
+  has_many :saved_students, # The list
     through: :saved_profile, 
-    inverse_of: :saved_tutors
+    inverse_of: :saved_tutors 
   has_many :subject_tutors, 
     inverse_of: :tutor
   has_many :subjects, 
@@ -37,7 +37,7 @@ class Tutor < User
     params[:page_size] = 20 unless params.key? :page_size
 
     # '.unscoped': its absence causes deprecation errors. See https://github.com/stefankroes/ancestry/pull/442
-    query = Tutor.unscoped.includes :postcode, :subjects, :languages, :availabilities
+    query = unscoped.includes :postcode, :subjects, :languages, :availabilities
 
     query = query.joins(:availabilities).where('availabilities.id IN (?)', params[:availabilities]) if params.key? :availabilities
     query = query.joins(:subjects).where('subjects.id IN (?)', params[:subjects]) if params.key? :subjects
@@ -60,35 +60,4 @@ class Tutor < User
       .offset(params[:page_number] * params[:page_size])
       .order('users.updated_at desc')
   }
-
-  def as_json(params={})
-    super.deep_merge({
-      data: {
-        type: 'tutors',
-        attributes: {
-          max_distance_available: max_distance_available,
-          hourly_rate: hourly_rate,
-          biography: biography,
-        },
-        relationships: {
-          tutor_availabilities: {
-            data: tutor_availabilities.map do |tutor_availability|
-                {
-                  type: 'tutor_availabilities',
-                  id: tutor_availability.id,
-                } 
-              end
-          },
-          subject_tutors: {
-            data: subject_tutors.map do |subject_tutor|
-                {
-                  type: 'subject_tutors',
-                  id: subject_tutor.id,
-                }
-              end
-          },
-        }
-      }
-    })
-  end
 end

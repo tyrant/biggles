@@ -1,29 +1,21 @@
-require "json-schema"
-
 class TutorsController < ApplicationController
 
   before_action :authenticate_user!
   before_action :validate_params!
 
   def search
-    render json: Tutor.search(tutor_params)
+    render json: _serialized!(Tutor.search(tutor_params))
   end
 
   def update
   end
-
-  # rescue_from Exception do |e|
-  #   render json: {
-  #     status: "Oh no!",
-  #     message: e.message,
-  #   }, status: 500
-  # end
 
   private
 
   def tutor_params
     params.permit!.to_h
   end
+
 
   def validate_params!
     tutor_search_api_schema = {
@@ -107,4 +99,27 @@ class TutorsController < ApplicationController
     end
   end
 
+
+  def _serialized!(records)
+    unless _instance_or_enumerable_of?(records, Tutor)
+      raise "Oh come on, just a Tutor or an enumerable collection of them, please"
+    end
+
+    # The ResourceSerializer accepts either a *_Resource or an
+    # array of them. Generate one or the other from our input
+    # Tutor or collection.
+    tutor_resources = if records.is_a?(Tutor)
+      TutorResource.new(records, nil)
+    else
+      records.map{|r| TutorResource.new(r, nil) }
+    end
+
+    JSONAPI::ResourceSerializer.new(
+        TutorResource,
+        { include: ['tutor_availabilities', 
+                    'tutor_availabilities.availabilities',
+                    'subject_tutors',
+                    'subject_tutors.subjects'] }
+      ).serialize_to_hash(tutor_resources)
+  end
 end
