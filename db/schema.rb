@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_08_004043) do
+ActiveRecord::Schema.define(version: 2021_07_08_040016) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -81,6 +81,8 @@ ActiveRecord::Schema.define(version: 2021_07_08_004043) do
     t.string "county"
     t.float "latitude"
     t.float "longitude"
+    t.datetime "created_at", default: "2021-07-08 04:01:24", null: false
+    t.datetime "updated_at", default: "2021-07-08 04:01:24", null: false
   end
 
   create_table "reviews", force: :cascade do |t|
