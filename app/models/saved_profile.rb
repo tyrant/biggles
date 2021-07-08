@@ -11,27 +11,4 @@ class SavedProfile < ApplicationRecord
     inverse_of: :saved_profiles,
     foreign_key: :savee_id
 
-  def as_json(params={})
-    {
-      data: {
-        id: id,
-        type: 'saved_profiles',
-        attributes: {},
-        relationships: {
-          saver: {
-            data: {
-              id: saver.id,
-              type: 'students',
-            }
-          },
-          savee: {
-            data: {
-              id: savee.id,
-              type: 'tutors',
-            }
-          }
-        }
-      }
-    }
-  end
 end
