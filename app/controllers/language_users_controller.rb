@@ -45,7 +45,7 @@ class LanguageUsersController < ApplicationController
     language_user_resources = if records.is_a?(LanguageUser)
       LanguageUserResource.new(records, nil)
     else
-      records.map{|lu| LanguageUserResource.new(lu, nil) }
+      records.map{|r| LanguageUserResource.new(r, nil) }
     end
 
     JSONAPI::ResourceSerializer.new(

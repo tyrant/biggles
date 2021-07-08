@@ -583,12 +583,12 @@ describe "Messages" do
         it { expect(response.status).to eq 200 }
         it "creates and returns a new Message object with messager=current_user" do
           expect(response_json['data']['relationships']['messager']['data']['id'])
-            .to eq messager.id
+            .to eq messager.id.to_s
         end
 
         it "creates and returns a new Message object with messagee=params[messagee]" do
           expect(response_json['data']['relationships']['messagee']['data']['id'])
-            .to eq messagee.id
+            .to eq messagee.id.to_s
         end
       end
 
@@ -649,8 +649,15 @@ describe "Messages" do
 
         it { expect(response.status).to eq 200 }
         it "returns the message JSON" do
+          expected_smr = JSONAPI::ResourceSerializer.new(
+            MessageResource, 
+            { include: ['messager', 'messagee'] }
+          ).serialize_to_hash(
+            MessageResource.new(message, nil)
+          )
+
           expect(response_json['data'])
-            .to eq message.as_json.deep_stringify_keys!['data']
+            .to eq expected_smr.deep_stringify_keys!['data']
         end
       end
 
@@ -665,8 +672,15 @@ describe "Messages" do
 
         it { expect(response.status).to eq 200 }
         it "returns the message JSON" do
+          expected_smr = JSONAPI::ResourceSerializer.new(
+            MessageResource, 
+            { include: ['messager', 'messagee'] }
+          ).serialize_to_hash(
+            MessageResource.new(message, nil)
+          )
+
           expect(response_json['data'])
-            .to eq message.as_json.deep_stringify_keys!['data']
+            .to eq expected_smr.deep_stringify_keys!['data']
         end
       end
 
@@ -706,8 +720,15 @@ describe "Messages" do
 
         it { expect(response.status).to eq 200 }
         it "returns the message JSON" do
+          expected_smr = JSONAPI::ResourceSerializer.new(
+            MessageResource, 
+            { include: ['messager', 'messagee'] }
+          ).serialize_to_hash(
+            MessageResource.new(message, nil)
+          )
+
           expect(response_json['data'])
-            .to eq message.as_json.deep_stringify_keys!['data']
+            .to eq expected_smr.deep_stringify_keys!['data']
         end
       end
 
@@ -720,8 +741,15 @@ describe "Messages" do
 
         it { expect(response.status).to eq 200 }
         it "returns the message JSON" do
+          expected_smr = JSONAPI::ResourceSerializer.new(
+            MessageResource, 
+            { include: ['messager', 'messagee'] }
+          ).serialize_to_hash(
+            MessageResource.new(message, nil)
+          )
+
           expect(response_json['data'])
-            .to eq message.as_json.deep_stringify_keys!['data']
+            .to eq expected_smr.deep_stringify_keys!['data']
         end
       end
 
