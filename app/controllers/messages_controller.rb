@@ -9,7 +9,7 @@ class MessagesController < ApplicationController
   def search
     messages = Message.search search_params.merge!(messager_id: current_user.id)
 
-    render json: _serialized!(messages)
+    render json: MessageSerializer.new(messages).serialize
   end
 
   # POST /messages. Create a new message: author (messager): current user;
@@ -20,7 +20,7 @@ class MessagesController < ApplicationController
 
     if message.valid?
       message.save!
-      render json: _serialized!(message)
+      render json: MessageSerializer.new(message).serialize
     else
       render json: { errors: message.errors.messages }, status: 422
     end
@@ -30,7 +30,7 @@ class MessagesController < ApplicationController
     @message.update! message_params
 
     if @message.valid?
-      render json: _serialized!(@message)
+      render json: MessageSerializer.new(@message).serialize
     else
       render json: { errors: @message.errors.messages }, status: 422
     end
@@ -39,7 +39,7 @@ class MessagesController < ApplicationController
   def destroy
     @message.destroy
 
-    render json: _serialized!(@message)
+    render json: MessageSerializer.new(@message).serialize
   end
 
   private
@@ -98,26 +98,5 @@ class MessagesController < ApplicationController
         error: errors 
       }.to_json, status: 402
     end
-  end
-
-
-  def _serialized!(records)
-    unless _instance_or_enumerable_of?(records, Message)
-      raise "Oh come on, just a Message or an enumerable collection of them, please"
-    end
-
-    # The ResourceSerializer accepts either a *_Resource or an
-    # array of them. Generate one or the other from our input
-    # Message or collection.
-    message_resources = if records.is_a?(Message)
-      MessageResource.new(records, nil)
-    else
-      records.map{|r| MessageResource.new(r, nil) }
-    end
-
-    JSONAPI::ResourceSerializer.new(
-        MessageResource,
-        { include: ['messager', 'messagee'] }
-      ).serialize_to_hash(message_resources)
   end
 end
